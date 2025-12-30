@@ -1,0 +1,63 @@
+# Environment Variables for Vercel Dashboard
+# Copy and paste these one by one into the Vercel dashboard
+# Dashboard URL: https://vercel.com/anoop-patels-projects/padhaku-learning-reimagined/settings/environment-variables
+
+# ===========================================
+# NextAuth Authentication
+# ===========================================
+NEXTAUTH_SECRET=dt4dBj9rQRrI88t7NjCpuUVAczGWYi9Z9LxxtWzA6Rk=
+NEXTAUTH_URL=https://padhaku-learning-reimagined.vercel.app
+
+# ===========================================
+# Google OAuth
+# ===========================================
+GOOGLE_CLIENT_ID=1005800343234-empcr4bda0s1dgj5ngace9anej039s44.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+
+# ===========================================
+# PostgreSQL Database (Supabase)
+# ===========================================
+DATABASE_URL=postgresql://postgres:I_am_awesome_@161923@db.ospnnykxlcskxsosnwpt.supabase.co:5432/postgres
+
+# ===========================================
+# Supabase Client Configuration
+# ===========================================
+NEXT_PUBLIC_SUPABASE_URL=https://ospnnykxlcskxsosnwpt.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zcG5ueWt4bGNza3hzb3Nud3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0OTM3MzYsImV4cCI6MjA3NzA2OTczNn0.4CRzxzt5xguHB5llCsovg0wE1pczKkmsYZCPVZ591qU
+
+# ===========================================
+# Google Gemini AI
+# ===========================================
+GEMINI_API_KEY=AIzaSyAdCNk20VR1j0nQ9Iigc8BQqReEyncYRGY
+
+# ===========================================
+# YouTube Data API v3
+# ===========================================
+YOUTUBE_API_KEY=AIzaSyCnoYFJplPauyPDWiFy7WUt5-7CP4Wl8ZU
+
+# ===========================================
+# Vapi Voice AI
+# ===========================================
+NEXT_PUBLIC_VAPI_PUBLIC_KEY=1a37dbb8-4f41-4ba9-a6fc-1bfc79511a6a
+NEXT_PUBLIC_VAPI_ASSISTANT_ID=b350ccaa-7ae0-43fa-af46-f2d40bfd9828
+
+# ===========================================
+# Pixabay API
+# ===========================================
+PIXABAY_API_KEY=53271752-e19c9a583c91cf2717db8b0e2
+
+# ===========================================
+# Python Backend (Magic Learn - DrawInAir)
+# ===========================================
+# NOTE: Update this after deploying Python backend to Railway
+NEXT_PUBLIC_PYTHON_BACKEND_URL=http://localhost:5000
+
+# ===========================================
+# INSTRUCTIONS:
+# ===========================================
+# 1. Go to: https://vercel.com/anoop-patels-projects/padhaku-learning-reimagined/settings/environment-variables
+# 2. Click "Add New" for each variable
+# 3. Select "Production" environment
+# 4. Copy the name and value for each variable above
+# 5. After deploying Python backend to Railway, update NEXT_PUBLIC_PYTHON_BACKEND_URL
+# 6. After adding all variables, redeploy the project
