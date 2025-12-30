@@ -654,11 +654,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Need Help?
 
-- Issues: [GitHub Issues](https://github.com/Anoop1925/PadhaKU/issues)
+- Issues: [GitHub Issues](https://github.com/Anoop1925/HackXios-EdTech/issues)
 
 ### Stay Connected
 
-- Star us on [GitHub](https://github.com/Anoop1925/PadhaKU)
+- Star us on [GitHub](https://github.com/Anoop1925/HackXios-EdTech)
 
 ---
 
