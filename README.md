@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./Eduverse/public/Main-logo2 .png" alt="PadhaKU Logo" width="400"/>
+<img src="./PadhaKu/public/Main-logo2 .png" alt="PadhaKU Logo" width="400"/>
 
 # PadhaKU - Knowledge Unlimited
 
@@ -39,7 +39,7 @@ Traditional learning platforms follow a one-size-fits-all approach that fails to
 
 ### 1. Magic Learn - Three-in-One Learning Suite
 
-<img src="./Eduverse/public/Magic-learn-feature-page.png" alt="Magic Learn" width="600"/>
+<img src="./PadhaKu/public/Magic-learn-feature-page.png" alt="Magic Learn" width="600"/>
 
 #### DrawInAir - Gesture-Based Drawing & Math Solver
 - **Hand Tracking**: Real-time gesture recognition using MediaPipe with 21 landmark detection
@@ -126,7 +126,7 @@ Traditional learning platforms follow a one-size-fits-all approach that fails to
 
 #### Landing Page
 <div align="center">
-<img src="./Eduverse/public/landing-page.png" alt="Landing Page" width="800"/>
+<img src="./PadhaKu/public/landing-page.png" alt="Landing Page" width="800"/>
 </div>
 
 *Modern, responsive landing page with frosted glass effects and smooth scroll navigation*
@@ -250,8 +250,8 @@ Before you begin, ensure you have the following installed:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/Anoop1925/Eduverse.git
-cd Eduverse/Eduverse
+git clone https://github.com/Anoop1925/PadhaKu.git
+cd PadhaKu/PadhaKu
 ```
 
 ### Step 2: Install Dependencies
@@ -271,7 +271,7 @@ pip install -r requirements.txt
 
 ### Step 3: Environment Configuration
 
-Create a `.env.local` file in the `Eduverse` directory:
+Create a `.env.local` file in the `PadhaKu` directory:
 
 ```env
 # Database Configuration
@@ -365,7 +365,7 @@ Create an account or sign in with Google to start learning!
 
 ```
 PadhaKU/
-├── Eduverse/                      # Main application directory
+├── PadhaKu/                      # Main application directory
 │   ├── public/                    # Static assets
 │   │   ├── Main-logo22.png       # Primary logo
 │   │   ├── App-Icon.png          # Favicon
