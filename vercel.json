@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd Eduverse && npm run build",
+  "devCommand": "cd Eduverse && npm run dev",
+  "installCommand": "cd Eduverse && npm install",
+  "framework": null,
+  "outputDirectory": "Eduverse/.next"
+}
