@@ -1,0 +1,32 @@
+/* CSS HEX */
+--royal-blue: #444fd6;
+--gallery: #efefef;
+--cornflower-blue: #5d87ee;
+--jordy-blue: #96b0f3;
+--hawkes-blue: #d0dffc;
+--indigo: #4b45cf;
+--royal-blue: #3766e7;
+--indigo: #5e56d3;
+--royal-blue: #3c5adf;
+
+/* SCSS HEX */
+$royal-blue: #444fd6;
+$gallery: #efefef;
+$cornflower-blue: #5d87ee;
+$jordy-blue: #96b0f3;
+$hawkes-blue: #d0dffc;
+$indigo: #4b45cf;
+$royal-blue: #3766e7;
+$indigo: #5e56d3;
+$royal-blue: #3c5adf;
+
+/* SCSS RGB */
+$royal-blue: rgba(68,79,214,1);
+$gallery: rgba(239,239,239,1);
+$cornflower-blue: rgba(93,135,238,1);
+$jordy-blue: rgba(150,176,243,1);
+$hawkes-blue: rgba(208,223,252,1);
+$indigo: rgba(75,69,207,1);
+$royal-blue: rgba(55,102,231,1);
+$indigo: rgba(94,86,211,1);
+$royal-blue: rgba(60,90,223,1);
