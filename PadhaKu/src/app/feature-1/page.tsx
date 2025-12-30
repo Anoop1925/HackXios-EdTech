@@ -1,0 +1,539 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Hand, Image as ImageIcon, BookOpen, Sparkles, Pencil, Camera, Info, CheckCircle2, AlertCircle, X } from "lucide-react";
+
+type Tab = "drawInAir" | "imageReader" | "plotCrafter";
+
+export default function Feature1Page() {
+  const [activeTab, setActiveTab] = useState<Tab>("drawInAir");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Canva-style progress notification state
+  const [launchStatus, setLaunchStatus] = useState<'idle' | 'launching' | 'success' | 'error'>('idle');
+  const [launchMessage, setLaunchMessage] = useState('');
+  const [progress, setProgress] = useState(0);
+  
+  const MAGIC_LEARN_URL = "/magic-learn"; // Updated to use Next.js route
+
+  const handleLaunch = async () => {
+    setLoading(true);
+    setError(null);
+    setLaunchStatus('launching');
+    setLaunchMessage('Magic Learn server is being loaded right now...');
+    setProgress(0);
+    
+    // Simulate progress during server startup (reaches 90% in ~11 seconds)
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 90) return 90; // Cap at 90% until we get actual response
+        return prev + 0.75; // Increment by 0.75% every 100ms (90% in ~12 seconds)
+      });
+    }, 100);
+    
+    try {
+      // First, check if backend is already running
+      const checkResponse = await fetch('/api/magic-learn/start', {
+        method: 'GET',
+      });
+      
+      const checkData = await checkResponse.json();
+      
+      if (!checkData.running) {
+        // Backend not running, start it
+        const startResponse = await fetch('/api/magic-learn/start', {
+          method: 'POST',
+        });
+        
+        const startData = await startResponse.json();
+        
+        if (!startData.success) {
+          clearInterval(progressInterval);
+          setLaunchStatus('error');
+          setLaunchMessage('Failed to start Magic Learn server. Please try again.');
+          setLoading(false);
+          setProgress(0);
+          
+          // Auto-hide error after 10 seconds
+          setTimeout(() => {
+            setLaunchStatus('idle');
+          }, 10000);
+          return;
+        }
+        
+        // Wait a bit more for the backend to be fully ready
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+      
+      // Clear interval and complete progress
+      clearInterval(progressInterval);
+      setProgress(100);
+      
+      // Success - server is ready
+      setLaunchStatus('success');
+      setLaunchMessage('Server is loaded on another tab, you can check it now');
+      
+      // Open Magic Learn page in new tab
+      window.open(MAGIC_LEARN_URL, "_blank");
+      
+      setLoading(false);
+      
+      // Auto-hide success message after 6 seconds
+      setTimeout(() => {
+        setLaunchStatus('idle');
+        setProgress(0);
+      }, 6000);
+      
+    } catch (err: any) {
+      clearInterval(progressInterval);
+      console.error('Error launching Magic Learn:', err);
+      setError(err.message || 'Failed to launch Magic Learn. Please make sure Python and required packages are installed.');
+      setLaunchStatus('error');
+      setLaunchMessage('Failed to launch Magic Learn. Please check your setup.');
+      setLoading(false);
+      setProgress(0);
+      
+      // Auto-hide error after 10 seconds
+      setTimeout(() => {
+        setLaunchStatus('idle');
+      }, 10000);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Magic Learn</h1>
+              <p className="text-base text-gray-500">AI-powered learning tools with gesture recognition and generative AI capabilities</p>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={handleLaunch}
+                disabled={loading}
+                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white rounded-lg font-semibold text-sm shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    <span>Starting Server...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    <span>Launch Magic Learn</span>
+                  </>
+                )}
+              </button>
+              {error && (
+                <p className="text-red-600 text-xs max-w-xs text-right">{error}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="border-b border-gray-200 bg-gray-50/50">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid grid-cols-3 gap-0">
+            <button
+              onClick={() => setActiveTab("drawInAir")}
+              className={`flex items-center justify-center gap-2 px-6 py-4 font-medium text-sm transition-all ${
+                activeTab === "drawInAir"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <Hand className="w-4 h-4" />
+              DrawInAir
+            </button>
+            <button
+              onClick={() => setActiveTab("imageReader")}
+              className={`flex items-center justify-center gap-2 px-6 py-4 font-medium text-sm transition-all ${
+                activeTab === "imageReader"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <ImageIcon className="w-4 h-4" />
+              Image Reader
+            </button>
+            <button
+              onClick={() => setActiveTab("plotCrafter")}
+              className={`flex items-center justify-center gap-2 px-6 py-4 font-medium text-sm transition-all ${
+                activeTab === "plotCrafter"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              Plot Crafter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* DrawInAir Tab */}
+        {activeTab === "drawInAir" && (
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <Hand className="w-6 h-6 text-blue-600" />
+              <h2 className="text-2xl font-bold text-gray-900">DrawInAir: Gesture-Based Learning</h2>
+            </div>
+            <p className="text-gray-500 mb-10">Draw mathematical equations and diagrams in the air using hand gestures</p>
+
+            <div className="grid md:grid-cols-2 gap-12 mb-12">
+              {/* How It Works */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">How It Works</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">1</div>
+                    <p className="text-gray-600 pt-1">Your webcam captures hand movements in real-time</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">2</div>
+                    <p className="text-gray-600 pt-1">Draw equations or diagrams using simple hand gestures</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">3</div>
+                    <p className="text-gray-600 pt-1">AI analyzes your drawing and provides instant feedback</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">4</div>
+                    <p className="text-gray-600 pt-1">For equations, get step-by-step solutions and explanations</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Gesture Controls */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Gesture Controls</h3>
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-4">
+                    <span className="font-semibold text-purple-700 bg-purple-100/60 px-4 py-2 rounded-lg whitespace-nowrap">Thumb + Index</span>
+                    <span className="text-gray-500">Start drawing</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-semibold text-purple-700 bg-purple-100/60 px-4 py-2 rounded-lg whitespace-nowrap">Thumb + Middle</span>
+                    <span className="text-gray-500">Erase drawing</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-semibold text-purple-700 bg-purple-100/60 px-4 py-2 rounded-lg whitespace-nowrap">Thumb + Index + Middle</span>
+                    <span className="text-gray-500">Move without drawing</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-semibold text-purple-700 bg-purple-100/60 px-4 py-2 rounded-lg whitespace-nowrap">Thumb + Pinky</span>
+                    <span className="text-gray-500">Clear canvas</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-semibold text-purple-700 bg-purple-100/60 px-4 py-2 rounded-lg whitespace-nowrap">Index + Middle</span>
+                    <span className="text-gray-500">Analyze/Calculate</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* AI-Powered Analysis & Teaching Applications Sections */}
+            <div className="space-y-12">
+              {/* AI-Powered Analysis */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">AI-Powered Analysis</h3>
+                <p className="text-gray-500 mb-6">The DrawInAir feature uses Google's Gemini 1.5 Flash AI model to analyze your drawings and provide intelligent feedback:</p>
+                
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* Mathematical Equations */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <Pencil className="w-5 h-5 text-blue-600" />
+                      <h4 className="font-semibold text-gray-900">Mathematical Equations</h4>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="bg-blue-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-blue-900 mb-1">Equation Recognition</div>
+                        <div className="text-sm text-gray-600">Recognizes handwritten equations</div>
+                      </div>
+                      <div className="bg-blue-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-blue-900 mb-1">Step-by-Step Solutions</div>
+                        <div className="text-sm text-gray-600">Provides detailed solutions</div>
+                      </div>
+                      <div className="bg-blue-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-blue-900 mb-1">Concept Explanation</div>
+                        <div className="text-sm text-gray-600">Explains mathematical concepts</div>
+                      </div>
+                      <div className="bg-blue-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-blue-900 mb-1">Advanced Math Support</div>
+                        <div className="text-sm text-gray-600">Works with basic and advanced math</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Drawings & Diagrams */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <ImageIcon className="w-5 h-5 text-purple-600" />
+                      <h4 className="font-semibold text-gray-900">Drawings & Diagrams</h4>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="bg-purple-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-purple-900 mb-1">Smart Recognition</div>
+                        <div className="text-sm text-gray-600">Identifies what you've drawn</div>
+                      </div>
+                      <div className="bg-purple-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-purple-900 mb-1">Detailed Analysis</div>
+                        <div className="text-sm text-gray-600">Provides descriptions and explanations</div>
+                      </div>
+                      <div className="bg-purple-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-purple-900 mb-1">Pattern Recognition</div>
+                        <div className="text-sm text-gray-600">Recognizes shapes and patterns</div>
+                      </div>
+                      <div className="bg-purple-50 px-4 py-3 rounded-lg">
+                        <div className="font-medium text-purple-900 mb-1">Skill Enhancement</div>
+                        <div className="text-sm text-gray-600">Helps improve drawing skills</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <p className="text-center text-gray-500">
+                Click the "Launch Magic Learn" button at the top to open the application
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Image Reader Tab */}
+        {activeTab === "imageReader" && (
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <ImageIcon className="w-6 h-6 text-green-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Image Reader: Visual Analysis</h2>
+            </div>
+            <p className="text-gray-500 mb-10">Upload images and get AI-powered analysis and explanations</p>
+
+            <div className="grid md:grid-cols-2 gap-12 mb-12">
+              {/* Key Features */}
+              {/* Key Features */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Features</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-green-50 text-green-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">1</div>
+                    <p className="text-gray-600 pt-1">Upload any image from your device</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-green-50 text-green-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">2</div>
+                    <p className="text-gray-600 pt-1">Add specific text prompts to guide the AI analysis</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-green-50 text-green-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">3</div>
+                    <p className="text-gray-600 pt-1">Get detailed AI explanations about the image content</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-green-50 text-green-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">4</div>
+                    <p className="text-gray-600 pt-1">Perfect for analyzing diagrams, charts, and educational content</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Use Cases */}
+              <div className="bg-green-50/70 rounded-lg p-6 border border-green-100/70">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Use Cases</h3>
+                <div className="space-y-2.5">
+                  <div className="flex items-start gap-2.5">
+                    <BookOpen className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Analyze textbook diagrams and illustrations</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Pencil className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Get explanations for complex charts and graphs</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Camera className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Understand scientific images and specimens</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Info className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Decode mathematical equations in images</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <p className="text-center text-gray-500">
+                Click the "Launch Magic Learn" button at the top to open the application
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Plot Crafter Tab */}
+        {activeTab === "plotCrafter" && (
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <BookOpen className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Plot Crafter: Educational Narratives</h2>
+            </div>
+            <p className="text-gray-500 mb-10">Learn educational topics through engaging story narratives with AI-generated visualizations</p>
+
+            <div className="grid md:grid-cols-2 gap-12 mb-12">
+              {/* How It Works */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">How It Works</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">1</div>
+                    <p className="text-gray-600 pt-1">Enter an educational topic like "Refraction of Light" or "Photosynthesis"</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">2</div>
+                    <p className="text-gray-600 pt-1">AI generates a 16:9 educational visualization of the concept</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">3</div>
+                    <p className="text-gray-600 pt-1">Get an engaging story narrative that explains the topic</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-semibold flex-shrink-0 mt-0.5">4</div>
+                    <p className="text-gray-600 pt-1">Learn complex concepts through storytelling and visuals</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Educational Applications */}
+              <div className="bg-purple-50/70 rounded-lg p-6 border border-purple-100/70">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Educational Applications</h3>
+                <div className="space-y-2.5">
+                  <div className="flex items-start gap-2.5">
+                    <Pencil className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Understand physics, chemistry, and biology concepts</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <BookOpen className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Learn mathematics through story-based explanations</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Info className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Visualize abstract concepts with AI-generated images</span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Make learning engaging and memorable for students</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <p className="text-center text-gray-500">
+                Click the "Launch Magic Learn" button at the top to open the application
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* Canva-Style Animated Progress Notification - Floating at bottom-center */}
+      {launchStatus !== 'idle' && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className={`
+            min-w-[420px] max-w-2xl
+            rounded-xl shadow-2xl border
+            backdrop-blur-sm
+            ${launchStatus === 'launching' ? 'bg-white/95 border-gray-200 dark:bg-gray-900/95 dark:border-gray-700' : ''}
+            ${launchStatus === 'success' ? 'bg-white/95 border-gray-200 dark:bg-gray-900/95 dark:border-gray-700' : ''}
+            ${launchStatus === 'error' ? 'bg-red-50/95 border-red-200 dark:bg-red-900/95 dark:border-red-700' : ''}
+          `}>
+            <div className="flex items-center gap-4 p-5">
+              {/* Icon */}
+              <div className="flex-shrink-0">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                  launchStatus === 'launching' ? 'bg-purple-100 dark:bg-white/10' : ''
+                } ${
+                  launchStatus === 'success' ? 'bg-green-100 dark:bg-white/10' : ''
+                } ${
+                  launchStatus === 'error' ? 'bg-red-100 dark:bg-red-800' : ''
+                }`}>
+                  {launchStatus === 'launching' && (
+                    <Sparkles className="w-7 h-7 text-purple-600 dark:text-white" />
+                  )}
+                  {launchStatus === 'success' && (
+                    <CheckCircle2 className="w-7 h-7 text-green-600 dark:text-green-400" />
+                  )}
+                  {launchStatus === 'error' && (
+                    <AlertCircle className="w-7 h-7 text-red-600 dark:text-red-300" />
+                  )}
+                </div>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className={`text-sm font-semibold mb-2 ${
+                  launchStatus === 'launching' ? 'text-gray-900 dark:text-white' : ''
+                } ${
+                  launchStatus === 'success' ? 'text-gray-900 dark:text-white' : ''
+                } ${
+                  launchStatus === 'error' ? 'text-red-900 dark:text-red-100' : ''
+                }`}>
+                  Magic Learn Server
+                </div>
+                
+                {/* Canva-style progress bar in the middle */}
+                {(launchStatus === 'launching' || launchStatus === 'success') && (
+                  <div className="mb-2 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 via-purple-500 to-pink-500 transition-all duration-300 ease-out rounded-full"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                )}
+                
+                <div className={`text-xs ${
+                  launchStatus === 'launching' ? 'text-gray-600 dark:text-gray-300' : ''
+                } ${
+                  launchStatus === 'success' ? 'text-gray-600 dark:text-gray-300' : ''
+                } ${
+                  launchStatus === 'error' ? 'text-red-700 dark:text-red-300' : ''
+                }`}>
+                  {launchMessage}
+                </div>
+              </div>
+              
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setLaunchStatus('idle');
+                  setProgress(0);
+                }}
+                className={`
+                  flex-shrink-0 rounded-lg p-1.5 transition-colors
+                  ${launchStatus === 'launching' ? 'hover:bg-gray-100 text-gray-500 hover:text-gray-700 dark:hover:bg-white/10 dark:text-gray-300 dark:hover:text-white' : ''}
+                  ${launchStatus === 'success' ? 'hover:bg-gray-100 text-gray-500 hover:text-gray-700 dark:hover:bg-white/10 dark:text-gray-300 dark:hover:text-white' : ''}
+                  ${launchStatus === 'error' ? 'hover:bg-red-100 dark:hover:bg-red-800 text-red-600 dark:text-red-400' : ''}
+                `}
+                aria-label="Close notification"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
