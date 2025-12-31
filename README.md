@@ -142,7 +142,7 @@ Traditional learning platforms follow a one-size-fits-all approach that fails to
 
 ### Video Demo
 
-**Watch PadhaKU in Action**: [Coming Soon]
+**Watch PadhaKU in Action**: [https://youtu.be/fY2FTIlgNf4](https://youtu.be/fY2FTIlgNf4)
 
 ---
 
